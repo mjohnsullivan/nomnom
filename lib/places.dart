@@ -33,9 +33,8 @@ getPlaces(double lat, double lng, StreamController<Place> placeStreamController)
     '?location=$lat,$lng' +
     '&radius=500&type=restaurant' +
     '&key=$gcpKey';
-    print(url);
+  
   // http.get(url).then( (resp) => print(resp.body) );
-
   var client = new http.Client();
   var req = new http.Request('get', Uri.parse(url));
   var streamedRes = await client.send(req);
@@ -46,4 +45,15 @@ getPlaces(double lat, double lng, StreamController<Place> placeStreamController)
     .expand((jsonBody) => (jsonBody as Map)['results'] )
     .map((jsonPlace) => new Place.fromJson(jsonPlace))
     .pipe(placeStreamController);
+    /*
+    .listen( (data) => print(data))
+    .onDone( () => client.close())
+    */
+}
+
+/// For testing purposes only
+main() {
+  var placeStreamController = new StreamController<Place>();
+  placeStreamController.stream.listen( (place) => print(place));
+  getPlaces(34.0195, -118.4912, placeStreamController);
 }
