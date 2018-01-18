@@ -40,19 +40,22 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   StreamController<places.Place> placesStreamController;
-  List<places.Place> placeList;
+  var placeList = <places.Place>[];
   static const platform = const MethodChannel('com.mjohnsullivan.nomnom/gps');
 
-  _getGPS() async {
+  /// Gets GPS location from platform-specific code
+  /// Note that only Android is implemented atm
+  Future<Float64List> _getGPS() async {
     try {
       final Float64List result = await platform.invokeMethod('getGPS');
-      print('GPS result: $result');
-      _getPlaces(result[0], result[1]);
+      return new Future(() => result);
     } on PlatformException catch (e) {
       print('Unable to retrieve GPS: ${e.message}');
     }
+    return null;
   }
 
+  /// Retrieves a list of restaurants from Google's Places REST API
   _getPlaces(double lat, double lng) {
     placesStreamController = new StreamController<places.Place>.broadcast();
     placesStreamController.stream.listen(
@@ -64,8 +67,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   initState() {
     super.initState();
-    placeList = [];
-    _getGPS();
+    _getGPS().then(
+      (latLng) => _getPlaces(latLng[0], latLng[1])
+    );
+
   }
 
   @override

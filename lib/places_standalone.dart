@@ -7,7 +7,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import 'gcp_key.dart' show gcpKey;
+import 'key.dart' show key;
 
 main() {
   getPlaces(33.9850, -118.4695); // Venice Beach, CA
@@ -30,9 +30,9 @@ getPlaces(double lat, double lng) async {
   var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json' +
     '?location=$lat,$lng' +
     '&radius=500&type=restaurant' +
-    '&key=$gcpKey';
-    print(url);
-   http.get(url).then( (resp) => print(resp.body) );
+    '&key=$key';
+
+   http.get(url).then((res) => print(res.body));
 
   /*var client = new http.Client();
   var req = new http.Request('get', Uri.parse(url));
@@ -44,5 +44,4 @@ getPlaces(double lat, double lng) async {
     .expand((jsonBody) => (jsonBody as Map)['results'] )
     .map((jsonPlace) => new Place.fromJson(jsonPlace));*/
     //.pipe(controller);
-
 }

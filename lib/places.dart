@@ -7,13 +7,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import './gcp_key.dart' show gcpKey;
-
-class LatLong {
-  LatLong(this.lat, this.long);
-  final double lat;
-  final double long;
-}
+import 'key.dart' show key;
 
 class Place {
   final String name;
@@ -32,9 +26,10 @@ getPlaces(double lat, double lng, StreamController<Place> placeStreamController)
   var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json' +
     '?location=$lat,$lng' +
     '&radius=500&type=restaurant' +
-    '&key=$gcpKey';
-  
-  // http.get(url).then( (resp) => print(resp.body) );
+    '&key=$key';
+
+  // http.get(url).then( (res) => print(res.body) );
+
   var client = new http.Client();
   var req = new http.Request('get', Uri.parse(url));
   var streamedRes = await client.send(req);
@@ -42,18 +37,17 @@ getPlaces(double lat, double lng, StreamController<Place> placeStreamController)
   streamedRes.stream
     .transform(UTF8.decoder)
     .transform(JSON.decoder)
-    .expand((jsonBody) => (jsonBody as Map)['results'] )
+    .expand((jsonBody) => (jsonBody as Map)['results'])
     .map((jsonPlace) => new Place.fromJson(jsonPlace))
     .pipe(placeStreamController);
-    /*
-    .listen( (data) => print(data))
-    .onDone( () => client.close())
-    */
+    // .listen( (data) => print(data))
+    // .onDone( () => client.close());
 }
 
 /// For testing purposes only
 main() {
   var placeStreamController = new StreamController<Place>();
   placeStreamController.stream.listen( (place) => print(place));
+  // Co-ords for Venice Beach, CA
   getPlaces(34.0195, -118.4912, placeStreamController);
 }
