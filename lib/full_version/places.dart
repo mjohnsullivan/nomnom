@@ -7,7 +7,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import 'key.dart' show key;
+import '../key.dart' show key;
 
 class Place {
   final String name;
@@ -29,7 +29,6 @@ getPlaces(double lat, double lng, StreamController<Place> placeStreamController)
     '&key=$key';
 
   // http.get(url).then( (res) => print(res.body) );
-
   var client = new http.Client();
   var req = new http.Request('get', Uri.parse(url));
   var streamedRes = await client.send(req);

@@ -7,7 +7,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import 'key.dart' show key;
+import '../key.dart' show key;
 
 main() {
   getPlaces(33.9850, -118.4695); // Venice Beach, CA
