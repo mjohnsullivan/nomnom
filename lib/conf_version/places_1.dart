@@ -30,8 +30,10 @@ Future<Stream<Place>> getPlaces(double lat, double lng) async {
     '&radius=500&type=restaurant' +
     '&key=$key';
 
-  http.get(url).then((res) => print(res.body));
-
+  http.get(url).then(
+    (res) => print(res.body)
+  );
+  
   /*var client = new http.Client();
   var streamedRes = await client.send(new http.Request('get', Uri.parse(url)));
 
