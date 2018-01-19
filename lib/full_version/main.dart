@@ -9,7 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_driver/driver_extension.dart';
 
-import './places.dart' as places;
+import 'places.dart' as places;
 
 void main() {
   enableFlutterDriverExtension();
@@ -39,7 +39,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  StreamController<places.Place> placesStreamController;
   var placeList = <places.Place>[];
   static const platform = const MethodChannel('com.mjohnsullivan.nomnom/gps');
 
@@ -56,12 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   /// Retrieves a list of restaurants from Google's Places REST API
-  _getPlaces(double lat, double lng) {
-    placesStreamController = new StreamController<places.Place>.broadcast();
-    placesStreamController.stream.listen(
-      (place) => setState( () => placeList.add(place) )
-    );
-    places.getPlaces(lat, lng, placesStreamController); 
+  _getPlaces(double lat, double lng) async {
+    Stream<places.Place> stream = await places.getPlaces(lat, lng); 
+    stream.listen((place) => setState(() => placeList.add(place)));
   }
 
   @override
@@ -71,12 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
       (latLng) => _getPlaces(latLng[0], latLng[1])
     );
 
-  }
-
-  @override
-  dispose() {
-    super.dispose();
-    placesStreamController.close();
   }
 
   @override
@@ -104,6 +94,16 @@ class PlaceWidget extends StatelessWidget {
     } else if (place.rating < 4) {
       ratingColor = Colors.green[400];
     }
+
+    var listTile = new ListTile(
+      leading: new CircleAvatar(
+        child: new Text(place.rating.toString()),
+        backgroundColor: ratingColor,
+      ),
+      title: new Text(place.name),
+      subtitle: new Text(place.address ?? "unknown ..."),
+      isThreeLine: false,
+    );
     
     return new Dismissible(
       key: new Key(place.name),
@@ -112,15 +112,7 @@ class PlaceWidget extends StatelessWidget {
         print('You dismissed ${place.name} ...'),
       background: new Container(color: Colors.green,),
       secondaryBackground: new Container(color: Colors.red),
-      child: new ListTile(
-        leading: new CircleAvatar(
-          child: new Text(place.rating.toString()),
-          backgroundColor: ratingColor,
-        ),
-        title: new Text(place.name),
-        subtitle: new Text(place.vicinity ?? "unknown ..."),
-        isThreeLine: false,
-      )
+      child: listTile,
     );
   }
 }

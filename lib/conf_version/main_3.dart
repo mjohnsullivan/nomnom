@@ -33,27 +33,18 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // CHANGED - places is now of type <Place>[]
   var places = <Place>[];
-  // ADDED - a place stream controller
-  StreamController<Place> placesStreamController;
 
   @override
   initState() {
     super.initState();
-    // ADDED - set up places stream
-    placesStreamController = new StreamController<Place>.broadcast();
-    placesStreamController.stream.listen(
-      (place) => setState(
-        () => places.add(place)
-      )
-    );
-    getPlaces(33.9850, -118.4695, placesStreamController);
+    // ADDED - function call to listen to places
+    listenForPlaces();
   }
 
-  // ADDED - dispose properly of the places stream
-  @override
-  dispose() {
-    super.dispose();
-    placesStreamController.close();
+  // ADDED - set up places stream listener
+  listenForPlaces() async { 
+    Stream<Place> stream = await getPlaces(33.9850, -118.4695);
+    stream.listen((place) => setState(() => places.add(place)));
   }
 
   @override

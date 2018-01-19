@@ -10,27 +10,23 @@ import 'package:http/http.dart' as http;
 import '../key.dart' show key;
 
 main() {
-  var sController = new StreamController<Place>.broadcast();
-  sController.stream.listen(
-    (place) => print('Streamed Place: ${place.name}')
-  );
-  getPlaces(33.9850, -118.4695, sController); // Venice Beach, CA
+  getPlaces(33.9850, -118.4695); // Venice Beach, CA
 }
 
 class Place {
   final String name;
   final double rating;
-  final String vicinity;
+  final String address;
 
   Place.fromJson(Map jsonMap) :
     name = jsonMap['name'],
     rating = jsonMap['rating']?.toDouble() ?? -1.0,
-    vicinity = jsonMap['vicinity'];
+    address = jsonMap['vicinity'];
 
   String toString() => 'Place: $name';
 }
 
-getPlaces(double lat, double lng, StreamController<Place> controller) async {
+Future<Stream<Place>> getPlaces(double lat, double lng) async {
   var url = 'https://maps.googleapis.com/maps/api/place/nearbysearch/json' +
     '?location=$lat,$lng' +
     '&radius=500&type=restaurant' +
@@ -39,13 +35,11 @@ getPlaces(double lat, double lng, StreamController<Place> controller) async {
   // http.get(url).then((res) => print(res.body));
 
   var client = new http.Client();
-  var req = new http.Request('get', Uri.parse(url));
-  var streamedRes = await client.send(req);
+  var streamedRes = await client.send(new http.Request('get', Uri.parse(url)));
 
-  streamedRes.stream
+  return streamedRes.stream
     .transform(UTF8.decoder)
     .transform(JSON.decoder)
     .expand((jsonBody) => (jsonBody as Map)['results'] )
-    .map((jsonPlace) => new Place.fromJson(jsonPlace))
-    .pipe(controller);
+    .map((jsonPlace) => new Place.fromJson(jsonPlace));
 }
