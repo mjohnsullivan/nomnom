@@ -29,16 +29,22 @@ getPlaces(double lat, double lng) async {
     '&radius=500&type=restaurant' +
     '&key=$key';
 
-  http.get(url).then((res) => print(res.body));
+  http.get(url).then(
+    (res) => print(res.body)
+  );
 
-  /*var client = new http.Client();
+  /*
+  var client = new http.Client();
   var req = new http.Request('get', Uri.parse(url));
   var streamedRes = await client.send(req);
+  */
 
-  streamedRes.stream
-    .transform(UTF8.decoder)
-    .transform(JSON.decoder)
-    .expand((jsonBody) => (jsonBody as Map)['results'] )
-    .map((jsonPlace) => new Place.fromJson(jsonPlace));*/
-    //.pipe(controller);
+  //streamedRes.stream
+  //  .transform(UTF8.decoder)
+  //  .transform(JSON.decoder)
+  //  .expand((jsonBody) => (jsonBody as Map)['results'] )
+  //  .map((jsonPlace) => new Place.fromJson(jsonPlace));
+  //  .listen( (data) => print(data))
+  //  .onDone( () => client.close());
+  //  .pipe(controller);
 }
