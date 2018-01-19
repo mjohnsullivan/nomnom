@@ -40,7 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   listenForPlaces() async {
-    Stream<Place> stream = await getPlaces(33.9850, -118.4695);
+    var stream = await getPlaces(33.9850, -118.4695);
     stream.listen((place) => setState(() => places.add(place)));
   }
 

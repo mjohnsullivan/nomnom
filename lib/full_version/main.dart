@@ -12,7 +12,7 @@ import 'package:flutter_driver/driver_extension.dart';
 import 'places.dart' as places;
 
 void main() {
-  enableFlutterDriverExtension();
+  // enableFlutterDriverExtension();
   runApp(new NomNomApp());
 }
 
@@ -31,7 +31,6 @@ class NomNomApp extends StatelessWidget {
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
-
   final String title;
 
   @override
@@ -56,11 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Retrieves a list of restaurants from Google's Places REST API
   _getPlaces(double lat, double lng) async {
-    Stream<places.Place> stream = await places.getPlaces(lat, lng); 
+    var stream = await places.getPlaces(lat, lng); 
     stream.listen(
-      (place) => setState(
-        () => placeList.add(place)
-      )
+      (place) => setState(() => placeList.add(place))
     );
   }
 
@@ -70,7 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
     _getGPS().then(
       (latLng) => _getPlaces(latLng[0], latLng[1])
     );
-
   }
 
   @override
