@@ -28,15 +28,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   // ADDED - Places list to the state
-  var places = <String>[];
+  List<String> places;
 
   @override
   initState() {
     super.initState();
     // ADDED - add 100 places to the places list
-    for (int i=0; i<100; i++) {
-      places.add('Place $i');
-    }
+    places = new List.generate(100, (i) => 'Restaurant $i');
   }
 
   @override

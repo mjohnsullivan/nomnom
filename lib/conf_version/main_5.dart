@@ -32,24 +32,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var places = <Place>[];
-  StreamController<Place> placesStreamController;
 
   @override
   initState() {
     super.initState();
-    placesStreamController = new StreamController<Place>.broadcast();
-    placesStreamController.stream.listen(
-      (place) => setState(
-        () => places.add(place)
-      )
-    );
-    getPlaces(33.9850, -118.4695, placesStreamController);
+    listenForPlaces();
   }
 
-  @override
-  dispose() {
-    super.dispose();
-    placesStreamController.close();
+  listenForPlaces() async {
+    Stream<Place> stream = await getPlaces(33.9850, -118.4695);
+    stream.listen((place) => setState(() => places.add(place)));
   }
 
   @override
@@ -73,6 +65,15 @@ class PlaceWidget extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    // CHANGED - made listTile a variable and passed it to Disimissible's child
+    var listTile = new ListTile(
+      leading: new CircleAvatar(
+        child: new Text(place.rating.toString()),
+        backgroundColor: Colors.blue,
+      ),
+      title: new Text(place.name),
+      subtitle: new Text(place.address),
+    );
     // ADDED - Dismssible
     return new Dismissible(
       key: new Key(place.name),
@@ -85,14 +86,7 @@ class PlaceWidget extends StatelessWidget {
           print('You didn\'t like ${place.name}');
         }
       },
-      child: new ListTile(
-        leading: new CircleAvatar(
-          child: new Text(place.rating.toString()),
-          backgroundColor: Colors.blue,
-        ),
-        title: new Text(place.name),
-        subtitle: new Text(place.vicinity),
-      ),
+      child: listTile,
     );
   }
 }

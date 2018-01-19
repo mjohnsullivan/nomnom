@@ -32,24 +32,16 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var places = <Place>[];
-  StreamController<Place> placesStreamController;
 
   @override
   initState() {
     super.initState();
-    placesStreamController = new StreamController<Place>.broadcast();
-    placesStreamController.stream.listen(
-      (place) => setState(
-        () => places.add(place)
-      )
-    );
-    getPlaces(33.9850, -118.4695, placesStreamController);
+    listenForPlaces();
   }
 
-  @override
-  dispose() {
-    super.dispose();
-    placesStreamController.close();
+  listenForPlaces() async {
+    Stream<Place> stream = await getPlaces(33.9850, -118.4695);
+    stream.listen((place) => setState(() => places.add(place)));
   }
 
   @override
@@ -81,7 +73,7 @@ class PlaceWidget extends StatelessWidget {
         backgroundColor: Colors.blue,
       ),
       title: new Text(place.name),
-      subtitle: new Text(place.vicinity),
+      subtitle: new Text(place.address),
     );
   }
 }
