@@ -57,7 +57,11 @@ class _MyHomePageState extends State<MyHomePage> {
   /// Retrieves a list of restaurants from Google's Places REST API
   _getPlaces(double lat, double lng) async {
     Stream<places.Place> stream = await places.getPlaces(lat, lng); 
-    stream.listen((place) => setState(() => placeList.add(place)));
+    stream.listen(
+      (place) => setState(
+        () => placeList.add(place)
+      )
+    );
   }
 
   @override
@@ -88,12 +92,8 @@ class PlaceWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Color ratingColor = Colors.green[800];
-    if (place.rating < 2) {
-      ratingColor = Colors.green[100];
-    } else if (place.rating < 4) {
-      ratingColor = Colors.green[400];
-    }
+    // Normalize rating to (0,1) and interpolate color from red to green
+    var ratingColor = Color.lerp(Colors.red, Colors.green, place.rating / 5);
 
     var listTile = new ListTile(
       leading: new CircleAvatar(

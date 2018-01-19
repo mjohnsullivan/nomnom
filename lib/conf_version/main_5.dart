@@ -65,11 +65,15 @@ class PlaceWidget extends StatelessWidget {
   
   @override
   Widget build(BuildContext context) {
+    // CHANGED - dynamically select color of rating avatar
+    // Normalize rating to (0,1) and interpolate color from red to green
+    var ratingColor = Color.lerp(Colors.red, Colors.green, place.rating / 5);
+
     // CHANGED - made listTile a variable and passed it to Disimissible's child
     var listTile = new ListTile(
       leading: new CircleAvatar(
         child: new Text(place.rating.toString()),
-        backgroundColor: Colors.blue,
+        backgroundColor: ratingColor,
       ),
       title: new Text(place.name),
       subtitle: new Text(place.address),
