@@ -2,17 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_driver/driver_extension.dart';
 
 import 'places.dart' as places;
 
 void main() {
-  // enableFlutterDriverExtension();
   runApp(new NomNomApp());
 }
 
@@ -39,34 +33,17 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var placeList = <places.Place>[];
-  static const platform = const MethodChannel('com.mjohnsullivan.nomnom/gps');
-
-  /// Gets GPS location from platform-specific code
-  /// Note that only Android is implemented atm
-  Future<Float64List> _getGPS() async {
-    try {
-      final Float64List result = await platform.invokeMethod('getGPS');
-      return new Future(() => result);
-    } on PlatformException catch (e) {
-      print('Unable to retrieve GPS: ${e.message}');
-    }
-    return null;
-  }
 
   /// Retrieves a list of restaurants from Google's Places REST API
   _getPlaces(double lat, double lng) async {
-    var stream = await places.getPlaces(lat, lng); 
-    stream.listen(
-      (place) => setState(() => placeList.add(place))
-    );
+    final stream = await places.getPlaces(lat, lng);
+    stream.listen((place) => setState(() => placeList.add(place)));
   }
 
   @override
   initState() {
     super.initState();
-    _getGPS().then(
-      (latLng) => _getPlaces(latLng[0], latLng[1])
-    );
+    _getPlaces(34.0195, -118.4912);
   }
 
   @override
@@ -100,13 +77,15 @@ class PlaceWidget extends StatelessWidget {
       subtitle: new Text(place.address ?? "unknown ..."),
       isThreeLine: false,
     );
-    
+
     return new Dismissible(
       key: new Key(place.name),
-      onDismissed: (dir) => dir == DismissDirection.startToEnd ?
-        print('You favorited ${place.name}!') :
-        print('You dismissed ${place.name} ...'),
-      background: new Container(color: Colors.green,),
+      onDismissed: (dir) => dir == DismissDirection.startToEnd
+          ? print('You favorited ${place.name}!')
+          : print('You dismissed ${place.name} ...'),
+      background: new Container(
+        color: Colors.green,
+      ),
       secondaryBackground: new Container(color: Colors.red),
       child: listTile,
     );
