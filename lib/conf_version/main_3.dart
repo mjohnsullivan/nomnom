@@ -33,6 +33,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   // CHANGED - places is now of type <Place>[]
   var places = <Place>[];
+  static final double starterDistance = 500.0;
+  double _distance = starterDistance;
 
   @override
   initState() {
@@ -43,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // ADDED - set up places stream listener
   listenForPlaces() async { 
-    var stream = await getPlaces(33.9850, -118.4695);
+    Stream<Place> stream = await getPlaces(33.9850, -118.4695, _distance);
     stream.listen((place) => setState(() => places.add(place)));
   }
 
@@ -53,12 +55,52 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: new AppBar(
         title: new Text(widget.title),
       ),
-      body: new Center(
-        // CHANGED - Text now uses place.name
-        child: new ListView(
-          children: places.map((place) => new Text(place.name)).toList(),
-        ),
+      body: new Column(
+        children: <Widget>[
+          new Slider(
+            value: _distance,
+            min: 300.0,
+            max: 1000.0,
+            onChanged: (double newValue) {
+              setState(() {
+              _distance = newValue;
+              
+              listenForPlaces();
+              });
+            }
+          ),
+          new Expanded(
+            child: new ListView(
+              children: places.map((place) => new PlaceWidget(place)).toList(),
+            ),
+          ),
+        ]
       ),
+    );
+  }
+}
+
+class PlaceWidget extends StatelessWidget {
+  Place _place;
+
+  PlaceWidget(this._place);
+  @override
+
+  Widget build(BuildContext context) {
+    var listTile = new ListTile(
+      title: new Text(_place.name),
+      subtitle: new Text(_place.address),
+      leading: new CircleAvatar(
+        child: new Text(_place.rating.toString()),
+        backgroundColor: Colors.blue,
+      )
+    );
+
+    return new Dismissible(
+      key: new Key(_place.name),
+      child: listTile,
+      background: new Container(color: Colors.red),
+      secondaryBackground: new Container(color: Colors.green),
     );
   }
 }
