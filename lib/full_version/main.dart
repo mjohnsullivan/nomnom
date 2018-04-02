@@ -40,6 +40,12 @@ class _MyHomePageState extends State<MyHomePage> {
     stream.listen((place) => setState(() => placeList.add(place)));
   }
 
+  _removePlace(places.Place place) {
+    if(placeList.contains(place)) {
+      setState(() => placeList.remove(place));
+    }
+  }
+
   @override
   initState() {
     super.initState();
@@ -53,15 +59,18 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text(widget.title),
       ),
       body: new ListView(
-        children: placeList.map((place) => new PlaceWidget(place)).toList(),
+        children: placeList.map((place) => new PlaceWidget(place, _removePlace)).toList(),
       ),
     );
   }
 }
 
+typedef PlaceRemover(places.Place place);
+
 class PlaceWidget extends StatelessWidget {
-  PlaceWidget(this.place);
+  PlaceWidget(this.place, this.removePlace);
   final places.Place place;
+  final PlaceRemover removePlace;
 
   @override
   Widget build(BuildContext context) {
@@ -80,9 +89,12 @@ class PlaceWidget extends StatelessWidget {
 
     return new Dismissible(
       key: new Key(place.name),
-      onDismissed: (dir) => dir == DismissDirection.startToEnd
-          ? print('You favorited ${place.name}!')
-          : print('You dismissed ${place.name} ...'),
+      onDismissed: (dir) {
+        dir == DismissDirection.startToEnd
+            ? print('You favorited ${place.name}!')
+            : print('You dismissed ${place.name} ...');
+        removePlace(place);
+      },
       background: new Container(
         color: Colors.green,
       ),
