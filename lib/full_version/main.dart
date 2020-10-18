@@ -6,16 +6,14 @@ import 'package:flutter/material.dart';
 
 import 'places.dart' as places;
 
-void main() {
-  runApp(new NomNomApp());
-}
+void main() => runApp(NomNomApp());
 
 class NomNomApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Nom Nom',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
       home: new MyHomePage(title: 'Nom Nom'),
@@ -48,12 +46,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
       ),
-      body: new ListView(
-        children: placeList.map((place) => new PlaceWidget(place)).toList(),
+      body: ListView(
+        children: placeList.map((place) => PlaceWidget(place)).toList(),
       ),
     );
   }
@@ -68,25 +66,25 @@ class PlaceWidget extends StatelessWidget {
     // Normalize rating to (0,1) and interpolate color from red to green
     var ratingColor = Color.lerp(Colors.red, Colors.green, place.rating / 5);
 
-    var listTile = new ListTile(
-      leading: new CircleAvatar(
-        child: new Text(place.rating.toString()),
+    var listTile = ListTile(
+      leading: CircleAvatar(
+        child: Text(place.rating.toString()),
         backgroundColor: ratingColor,
       ),
-      title: new Text(place.name),
-      subtitle: new Text(place.address ?? "unknown ..."),
+      title: Text(place.name),
+      subtitle:  Text(place.address ?? "unknown ..."),
       isThreeLine: false,
     );
 
-    return new Dismissible(
-      key: new Key(place.name),
+    return Dismissible(
+      key: Key(place.name),
       onDismissed: (dir) => dir == DismissDirection.startToEnd
           ? print('You favorited ${place.name}!')
           : print('You dismissed ${place.name} ...'),
-      background: new Container(
+      background: Container(
         color: Colors.green,
       ),
-      secondaryBackground: new Container(color: Colors.red),
+      secondaryBackground: Container(color: Colors.red),
       child: listTile,
     );
   }
